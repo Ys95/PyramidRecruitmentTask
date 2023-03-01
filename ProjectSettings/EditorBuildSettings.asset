@@ -4,5 +4,9 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/PyramidRecruitmentTask/Scenes/MainScene.unity
+    guid: 27d076cc7d437824ab7925422c79c8bb
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: e08bc8ca9754a9c4e970f5ce15b54a02, type: 2}
