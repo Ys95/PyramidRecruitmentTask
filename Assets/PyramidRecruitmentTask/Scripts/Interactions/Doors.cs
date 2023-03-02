@@ -58,7 +58,7 @@ namespace PyramidRecruitmentTask
         private void OpenDoors()
         {
             Debug.Log("Doors opened!");
-            Destroy(gameObject);
+            FindObjectOfType<GameManager>().GameOver();
         }
     }
 }

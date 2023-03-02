@@ -35,7 +35,7 @@ public abstract class InteractableObject : MonoBehaviour, IPointerEnterHandler, 
         
         HandlePointerExit();
     }
-    
+
     private void Awake()
     {
         _renderer             = GetComponent<Renderer>();
