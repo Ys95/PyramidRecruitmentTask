@@ -1,18 +1,23 @@
 ﻿using System;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Input
 {
     public enum ButtonState
     {
         Released,
         Pressed,
-        Held,
+        Held
     }
-    
+
     [Serializable]
     public class InputButton
     {
         private StateMachine<ButtonState> _state;
+
+        public InputButton()
+        {
+            _state = new StateMachine<ButtonState>(ButtonState.Released, false);
+        }
 
         public ButtonState P_CurrentState  => _state.P_CurrentState;
         public ButtonState P_PreviousState => _state.P_PreviousState;
@@ -53,10 +58,5 @@ namespace PyramidRecruitmentTask
         public event Action E_ButtonPress;
         public event Action E_ButtonHold;
         public event Action E_ButtonRelease;
-
-        public InputButton()
-        {
-            _state = new StateMachine<ButtonState>(ButtonState.Released, false);
-        }
     }
 }

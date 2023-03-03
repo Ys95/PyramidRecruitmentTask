@@ -1,42 +1,33 @@
 ﻿using System.Collections.Generic;
+using PyramidRecruitmentTask.Player;
+using PyramidRecruitmentTask.Signals;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Interactions
 {
     public class Chest : InteractableObject
     {
         [SerializeField] private GameObject _chestContent;
 
         private bool _isOpened;
-        
-        protected override void HandleInteraction()
-        {
-            var popupCon = FindObjectOfType<PopupWindow>();
 
-            var popupOptions = new List<PopupWindow.PopupOptionsInfo>()
+        protected override void HandleInteraction(PlayerInteraction playerInteraction)
+        {
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
             {
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName = "Yes",
-                    P_OptionSelectionAction = () =>
-                    {
-                        popupCon.ClosePopup();
-                        OpenChest();
-                    }
+                    P_OptionName            = "Yes",
+                    P_OptionSelectionAction = OpenChest
                 },
-                
-                new PopupWindow.PopupOptionsInfo()
+
+                new()
                 {
-                    P_OptionName = "No",
-                    P_OptionSelectionAction = () =>
-                    {
-                        popupCon.ClosePopup();
-                    }
+                    P_OptionName = "No"
                 }
             };
-            
-            popupCon.CreateInteractionPopup("Open?", popupOptions, transform.position);
+
+            _signalBus.Fire(new ShowInteractionPopupSignal("Open?", popupOptions, transform.position));
         }
 
         private void OpenChest()

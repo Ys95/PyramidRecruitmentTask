@@ -1,66 +1,88 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using PyramidRecruitmentTask;
+using PyramidRecruitmentTask.Feedbacks;
+using PyramidRecruitmentTask.Input;
+using PyramidRecruitmentTask.Player;
+using PyramidRecruitmentTask.Signals;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
-[RequireComponent(typeof(Collider))]
-public abstract class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace PyramidRecruitmentTask.Interactions
 {
-    [SerializeField] private Material _mouseOverMaterial;
-
-    private Renderer     _renderer;
-    private Material     _regularMaterial;
-    
-    protected InputManager _inputManager;
-    protected bool         _pointerEventsAllowed;
-    
-    public void OnPointerEnter(PointerEventData eventData)
+    [RequireComponent(typeof(Collider))]
+    public abstract class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDisposable, IInitializable
     {
-        if (!_pointerEventsAllowed)
+        [SerializeField] private Material        _mouseOverMaterial;
+        [SerializeField] private FeedbacksPlayer _interactionFeedbacks;
+
+        protected InputManager _inputManager;
+        protected bool         _pointerEventsAllowed;
+        private   Material     _regularMaterial;
+        private   Renderer     _renderer;
+
+        [Inject] protected SignalBus _signalBus;
+
+        private void Awake()
         {
-            return;
+            _renderer             = GetComponent<Renderer>();
+            _regularMaterial      = _renderer.material;
+            _inputManager         = FindObjectOfType<InputManager>();
+            _pointerEventsAllowed = true;
         }
-        
-        HandlePointerEnter();
-    }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (!_pointerEventsAllowed)
+        public void Dispose()
         {
-            return;
+            _signalBus.TryUnsubscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
         }
-        
-        HandlePointerExit();
-    }
 
-    private void Awake()
-    {
-        _renderer             = GetComponent<Renderer>();
-        _regularMaterial      = _renderer.material;
-        _inputManager         = FindObjectOfType<InputManager>();
-        _pointerEventsAllowed = true;
-    }
-
-    protected abstract void HandleInteraction();
-
-    protected virtual void HandlePointerEnter()
-    {
-        _inputManager.P_InteractionButton.E_ButtonPress += HandleInteraction;
-        if (_mouseOverMaterial != null)
+        public void Initialize()
         {
-            _renderer.material = _mouseOverMaterial;
         }
-    }
 
-    protected virtual void HandlePointerExit()
-    {
-        _inputManager.P_InteractionButton.E_ButtonPress -= HandleInteraction;
-        if (_mouseOverMaterial != null)
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            _renderer.material = _regularMaterial;
+            if (!_pointerEventsAllowed)
+            {
+                return;
+            }
+
+            HandlePointerEnter();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!_pointerEventsAllowed)
+            {
+                return;
+            }
+
+            HandlePointerExit();
+        }
+
+        protected abstract void HandleInteraction(PlayerInteraction playerInteraction);
+
+        protected virtual void OnPlayerInteractionAttempt(PlayerInteractionAttemptSignal signal)
+        {
+            _interactionFeedbacks?.Play();
+            HandleInteraction(signal.P_PlayerInteraction);
+        }
+
+        protected virtual void HandlePointerEnter()
+        {
+            _signalBus.Subscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
+            if (_mouseOverMaterial != null)
+            {
+                _renderer.material = _mouseOverMaterial;
+            }
+        }
+
+        protected virtual void HandlePointerExit()
+        {
+            _signalBus.TryUnsubscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
+            if (_mouseOverMaterial != null)
+            {
+                _renderer.material = _regularMaterial;
+            }
         }
     }
 }

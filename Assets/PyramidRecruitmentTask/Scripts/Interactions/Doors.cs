@@ -1,64 +1,58 @@
 ﻿using System.Collections.Generic;
+using PyramidRecruitmentTask.Player;
+using PyramidRecruitmentTask.Signals;
 using UnityEngine;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Interactions
 {
     public class Doors : InteractableObject
     {
-        protected override void HandleInteraction()
+        protected override void HandleInteraction(PlayerInteraction playerInteraction)
         {
-            if (FindObjectOfType<Player>().OwnedKeys <= 0)
+            if (playerInteraction.OwnedKeys <= 0)
             {
                 ShowNoKeyMessage();
                 return;
             }
-            
+
             var popupCon = FindObjectOfType<PopupWindow>();
 
-            var popupOptions = new List<PopupWindow.PopupOptionsInfo>()
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
             {
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName = "Yes",
-                    P_OptionSelectionAction = () =>
-                    {
-                        popupCon.ClosePopup();
-                        OpenDoors();
-                    }
+                    P_OptionName            = "Yes",
+                    P_OptionSelectionAction = OpenDoors
                 },
 
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName            = "No",
-                    P_OptionSelectionAction = () => { popupCon.ClosePopup(); }
+                    P_OptionName = "No"
                 }
             };
 
-            popupCon.CreateInteractionPopup("Open?", popupOptions, transform.position);
+            _signalBus.Fire(new ShowInteractionPopupSignal("Open?", popupOptions, transform.position));
         }
 
         private void ShowNoKeyMessage()
         {
             var popupCon = FindObjectOfType<PopupWindow>();
-            var popupOptions = new List<PopupWindow.PopupOptionsInfo>()
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
             {
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName = "Ok",
-                    P_OptionSelectionAction = () =>
-                    {
-                        popupCon.ClosePopup();
-                    }
+                    P_OptionName            = "Ok",
+                    P_OptionSelectionAction = () => { popupCon.ClosePopup(); }
                 }
             };
-            
-            popupCon.CreateInteractionPopup("You need a key!", popupOptions, transform.position);
+
+            _signalBus.Fire(new ShowInteractionPopupSignal("You need a key!", popupOptions, transform.position));
         }
-        
+
         private void OpenDoors()
         {
             Debug.Log("Doors opened!");
-            FindObjectOfType<GameManager>().GameOver();
+            _signalBus.Fire<DoorOpenedSignal>();
         }
     }
 }

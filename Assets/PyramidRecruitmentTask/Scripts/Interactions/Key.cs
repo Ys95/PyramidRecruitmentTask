@@ -1,41 +1,34 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using PyramidRecruitmentTask.Player;
+using PyramidRecruitmentTask.Signals;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Interactions
 {
     public class Key : InteractableObject
     {
-        protected override void HandleInteraction()
+        protected override void HandleInteraction(PlayerInteraction playerInteraction)
         {
-            var popupCon = FindObjectOfType<PopupWindow>();
-
-            var popupOptions = new List<PopupWindow.PopupOptionsInfo>()
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
             {
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName = "Yes",
-                    P_OptionSelectionAction = () =>
-                    {
-                        popupCon.ClosePopup();
-                        PickupKey();
-                    }
+                    P_OptionName            = "Yes",
+                    P_OptionSelectionAction = () => { PickupKey(playerInteraction); }
                 },
 
-                new PopupWindow.PopupOptionsInfo()
+                new()
                 {
-                    P_OptionName            = "No",
-                    P_OptionSelectionAction = () => { popupCon.ClosePopup(); }
+                    P_OptionName = "No"
                 }
             };
 
-            popupCon.CreateInteractionPopup("Take?", popupOptions, transform.position);
+            _signalBus.Fire(new ShowInteractionPopupSignal("Take?", popupOptions, transform.position));
         }
 
-        private void PickupKey()
+        private void PickupKey(PlayerInteraction playerInteraction)
         {
-            var player = FindObjectOfType<Player>();
-            player.AddKey();
-            Destroy(gameObject);
+            playerInteraction.AddKey();
+            gameObject.SetActive(false);
         }
     }
 }

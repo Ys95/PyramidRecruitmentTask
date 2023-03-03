@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Input
 {
     [Serializable]
     public class InputValue<T>

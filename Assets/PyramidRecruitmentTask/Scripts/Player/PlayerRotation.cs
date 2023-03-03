@@ -1,18 +1,23 @@
-﻿using System;
+﻿using PyramidRecruitmentTask.Input;
 using UnityEngine;
+using Zenject;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Player
 {
     public class PlayerRotation : MonoBehaviour
     {
-        [SerializeField] private InputManager _inputManager;
+        [SerializeField]                   private Transform _rotatingTransform;
+        [SerializeField]                   private float     _speed;
+        [SerializeField] [Range(0, 0.99f)] private float     _smoothing;
 
-        [Space]
-        [SerializeField] private Transform _rotatingTransform;
-        [SerializeField]                   private float _speed;
-        [SerializeField] [Range(0, 0.99f)] private float _smoothing;
+        [Inject] private InputManager _inputManager;
 
         public float P_RotationDirectionInput { get; private set; }
+
+        private void Update()
+        {
+            Rotate();
+        }
 
         private void OnEnable()
         {
@@ -32,11 +37,6 @@ namespace PyramidRecruitmentTask
         private void Rotate()
         {
             _rotatingTransform.Rotate(new Vector3(0, P_RotationDirectionInput * _speed * Time.deltaTime, 0));
-        }
-
-        private void Update()
-        {
-            Rotate();
         }
     }
 }
