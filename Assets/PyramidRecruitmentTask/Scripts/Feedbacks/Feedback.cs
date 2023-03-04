@@ -5,7 +5,7 @@ using Zenject;
 namespace PyramidRecruitmentTask.Feedbacks
 {
     [Serializable]
-    internal abstract class Feedback
+    public abstract class Feedback
     {
         [SerializeField] private float _delay;
 

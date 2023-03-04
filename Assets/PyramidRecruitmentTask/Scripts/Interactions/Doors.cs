@@ -9,15 +9,13 @@ namespace PyramidRecruitmentTask.Interactions
     {
         protected override void HandleInteraction(PlayerInteraction playerInteraction)
         {
-            if (playerInteraction.OwnedKeys <= 0)
+            if (playerInteraction.P_OwnedKeys <= 0)
             {
                 ShowNoKeyMessage();
                 return;
             }
-
-            var popupCon = FindObjectOfType<PopupWindow>();
-
-            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
+            
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new()
             {
                 new()
                 {
@@ -37,7 +35,7 @@ namespace PyramidRecruitmentTask.Interactions
         private void ShowNoKeyMessage()
         {
             var popupCon = FindObjectOfType<PopupWindow>();
-            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new()
             {
                 new()
                 {
@@ -51,7 +49,6 @@ namespace PyramidRecruitmentTask.Interactions
 
         private void OpenDoors()
         {
-            Debug.Log("Doors opened!");
             _signalBus.Fire<DoorOpenedSignal>();
         }
     }

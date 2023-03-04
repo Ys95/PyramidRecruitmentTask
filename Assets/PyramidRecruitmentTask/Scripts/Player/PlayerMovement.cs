@@ -8,18 +8,17 @@ namespace PyramidRecruitmentTask.Player
     {
         [Header("Movement")]
         [SerializeField] private Transform _facingDirectionSource;
-        [SerializeField] private float               _acceleration;
-        [SerializeField] private float               _deceleration;
-        [SerializeField] private float               _maxAbsoluteVelocity;
-        [SerializeField] private bool                _applyCounterMovement;
-        [SerializeField] private float               _counterMovementForce;
-        private                  CharacterController _characterController;
+        [SerializeField] private float _acceleration;
+        [SerializeField] private float _deceleration;
+        [SerializeField] private float _maxAbsoluteVelocity;
+
+        private CharacterController _characterController;
 
         [Inject] private InputManager _inputManager;
         private          Vector3      _motionVector;
         private          Vector3      _velocity;
 
-        public Vector2 P_RawMovementVector { get; private set; }
+        public Vector2 P_InputVector { get; private set; }
 
         private void Awake()
         {
@@ -30,7 +29,6 @@ namespace PyramidRecruitmentTask.Player
         {
             CalculateAcceleration();
             CalculateDeceleration();
-            CalculateCounterMovement();
             Move();
         }
 
@@ -46,18 +44,18 @@ namespace PyramidRecruitmentTask.Player
 
         private void UpdateInput(Vector2 input)
         {
-            P_RawMovementVector = input;
+            P_InputVector = input;
         }
 
         private void CalculateAcceleration()
         {
-            _velocity.z += _acceleration * Time.deltaTime * P_RawMovementVector.y;
-            _velocity.x += _acceleration * Time.deltaTime * P_RawMovementVector.x;
+            _velocity.z += _acceleration * Time.deltaTime * P_InputVector.y;
+            _velocity.x += _acceleration * Time.deltaTime * P_InputVector.x;
         }
 
         private void CalculateDeceleration()
         {
-            if (Mathf.Abs(P_RawMovementVector.y) <= 0)
+            if (Mathf.Abs(P_InputVector.y) <= 0)
             {
                 if (Mathf.Abs(_velocity.z) <= 0.1)
                 {
@@ -70,7 +68,7 @@ namespace PyramidRecruitmentTask.Player
                 }
             }
 
-            if (Mathf.Abs(P_RawMovementVector.x) <= 0)
+            if (Mathf.Abs(P_InputVector.x) <= 0)
             {
                 if (Mathf.Abs(_velocity.x) <= 0.1)
                 {
@@ -81,28 +79,6 @@ namespace PyramidRecruitmentTask.Player
                     float dir = Mathf.Sign(_velocity.x) * -1;
                     _velocity.x += _deceleration * Time.deltaTime * dir;
                 }
-            }
-        }
-
-        private void CalculateCounterMovement()
-        {
-            if (!_applyCounterMovement)
-            {
-                return;
-            }
-
-            // If player is changing direction, apply additional acceleration until velocity direction matches input direction
-            float movementDirectionX = Mathf.Sign(P_RawMovementVector.x);
-            float movementDirectionZ = Mathf.Sign(P_RawMovementVector.y);
-
-            if (!Mathf.Approximately(movementDirectionX, _velocity.x))
-            {
-                _velocity.x += Time.deltaTime * _counterMovementForce * P_RawMovementVector.x;
-            }
-
-            if (!Mathf.Approximately(movementDirectionZ, _velocity.z))
-            {
-                _velocity.z += Time.deltaTime * _counterMovementForce * P_RawMovementVector.y;
             }
         }
 

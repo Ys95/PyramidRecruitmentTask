@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
+using PyramidRecruitmentTask.Feedbacks;
 using PyramidRecruitmentTask.Player;
 using PyramidRecruitmentTask.Signals;
+using UnityEngine;
 
 namespace PyramidRecruitmentTask.Interactions
 {
     public class Key : InteractableObject
     {
+        [SerializeField] private FeedbacksPlayer _keyPickedUpFeedbacks;
+        [SerializeField] private GameObject      _keyModel;
+        
         protected override void HandleInteraction(PlayerInteraction playerInteraction)
         {
-            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new()
             {
                 new()
                 {
@@ -28,7 +33,9 @@ namespace PyramidRecruitmentTask.Interactions
         private void PickupKey(PlayerInteraction playerInteraction)
         {
             playerInteraction.AddKey();
-            gameObject.SetActive(false);
+            _keyModel.SetActive(false);
+            _collider.enabled = false;
+            _keyPickedUpFeedbacks?.Play();
         }
     }
 }

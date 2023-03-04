@@ -1,5 +1,6 @@
 ﻿using Cinemachine;
 using PyramidRecruitmentTask.Signals;
+using PyramidRecruitmentTask.UI;
 using UnityEngine;
 using Zenject;
 
@@ -14,24 +15,28 @@ namespace PyramidRecruitmentTask.Managers
 
     public class GameManager : MonoBehaviour
     {
+        [Header("Audio")]
         [SerializeField] private AudioClip _menuBgm;
         [SerializeField] private AudioClip _inGameBgm;
+        [SerializeField] private AudioClip _gameOverBgm;
 
-        [Inject] private AudioManager             _audioManager;
-        [Inject] private CinemachineVirtualCamera _cmMainCam;
+        [Header("Camera")]
+        [SerializeField] private CinemachineVirtualCamera _gameCamera;
+        [SerializeField] private CinemachineVirtualCamera _mainMenuCamera;
 
-        private          StateMachine<GameState> _gameState;
-        [Inject] private ObjectsSpawner          _objectsSpawner;
-        [Inject] private SignalBus               _signalBus;
-        [Inject] private Timer                   _timer;
-        [Inject] private UIManager               _uiManager;
+        private StateMachine<GameState> _gameState;
+
+        [Inject] private AudioManager   _audioManager;
+        [Inject] private ObjectsSpawner _objectsSpawner;
+        [Inject] private SignalBus      _signalBus;
+        [Inject] private Timer          _timer;
+        [Inject] private UIManager      _uiManager;
 
         public GameState P_CurrentState => _gameState.P_CurrentState;
 
         private void Awake()
         {
             _audioManager.Initialize();
-
             _gameState                =  new StateMachine<GameState>(GameState.MainMenu, true);
             _gameState.E_StateChanged += OnGameStateChanged;
             OnMainMenuEnter();
@@ -117,25 +122,31 @@ namespace PyramidRecruitmentTask.Managers
 
         private void OnMainMenuEnter()
         {
+            _mainMenuCamera.Priority = 10;
             _objectsSpawner.WipeEverything();
             _uiManager.P_MainMenuScreen.gameObject.SetActive(true);
-            _audioManager.PlayBGM(_menuBgm);
+            _audioManager.PlayBGM(_menuBgm, true);
         }
 
         private void OnMainMenuExit()
         {
+            _mainMenuCamera.Priority = 0;
             _uiManager.P_MainMenuScreen.gameObject.SetActive(false);
         }
 
         private void OnInGameEnter()
         {
+            _gameCamera.Priority = 10;
             _objectsSpawner.RespawnEverything();
             _timer.StartTimer();
-            _audioManager.PlayBGM(_inGameBgm);
+            _uiManager.P_InGameUI.gameObject.SetActive(true);
+            _audioManager.PlayBGM(_inGameBgm, true);
         }
 
         private void OnInGameExit()
         {
+            _gameCamera.Priority = 0;
+            _uiManager.P_InGameUI.gameObject.SetActive(false);
             _timer.StopTimer();
         }
 
@@ -143,6 +154,7 @@ namespace PyramidRecruitmentTask.Managers
         {
             ScoreManager.ProcessNewScore(_timer.P_Time);
             _uiManager.DisplayGameOverScreen();
+            _audioManager.PlayBGM(_gameOverBgm, false);
         }
 
         private void OnGameOverExit()

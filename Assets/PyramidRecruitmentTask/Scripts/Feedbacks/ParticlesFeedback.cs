@@ -8,19 +8,15 @@ namespace PyramidRecruitmentTask.Feedbacks
     [Serializable]
     internal class ParticlesFeedback : Feedback
     {
-        [SerializeField] private ParticleSystem _particlesPrefab;
-
-        private ParticleSystem _particleSystem;
+        [SerializeField] private ParticleSystem _particles;
 
         public override void Initialize(SignalBus signalBus)
         {
-            _particleSystem = Object.Instantiate(_particlesPrefab);
         }
 
         public override void Play(Vector3 position)
         {
-            _particleSystem.transform.position = position;
-            _particleSystem.Play();
+            _particles.Play();
         }
     }
 }

@@ -8,7 +8,6 @@ namespace PyramidRecruitmentTask.Player
     {
         [SerializeField]                   private Transform _rotatingTransform;
         [SerializeField]                   private float     _speed;
-        [SerializeField] [Range(0, 0.99f)] private float     _smoothing;
 
         [Inject] private InputManager _inputManager;
 

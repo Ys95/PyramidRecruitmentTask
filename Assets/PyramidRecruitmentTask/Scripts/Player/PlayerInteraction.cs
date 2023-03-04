@@ -10,7 +10,7 @@ namespace PyramidRecruitmentTask.Player
         [Inject] private InputManager _inputManager;
         [Inject] private SignalBus    _signalBus;
 
-        public int OwnedKeys { get; private set; }
+        public int P_OwnedKeys { get; private set; }
 
         private void Awake()
         {
@@ -19,12 +19,7 @@ namespace PyramidRecruitmentTask.Player
 
         public void AddKey()
         {
-            OwnedKeys++;
-        }
-
-        public void UseKey()
-        {
-            OwnedKeys--;
+            P_OwnedKeys++;
         }
 
         private void OnInteraction()

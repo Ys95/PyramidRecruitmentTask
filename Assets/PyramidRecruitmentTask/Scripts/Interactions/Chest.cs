@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PyramidRecruitmentTask.Feedbacks;
 using PyramidRecruitmentTask.Player;
 using PyramidRecruitmentTask.Signals;
 using UnityEngine;
@@ -7,13 +8,16 @@ namespace PyramidRecruitmentTask.Interactions
 {
     public class Chest : InteractableObject
     {
+        [SerializeField] private FeedbacksPlayer _chestOpenedFeedback;
+        
+        [Space]
         [SerializeField] private GameObject _chestContent;
 
         private bool _isOpened;
 
         protected override void HandleInteraction(PlayerInteraction playerInteraction)
         {
-            List<PopupWindow.PopupOptionsInfo> popupOptions = new List<PopupWindow.PopupOptionsInfo>
+            List<PopupWindow.PopupOptionsInfo> popupOptions = new()
             {
                 new()
                 {
@@ -32,11 +36,12 @@ namespace PyramidRecruitmentTask.Interactions
 
         private void OpenChest()
         {
-            Debug.Log("Chest opened!");
             HandlePointerExit();
+            
             _isOpened             = true;
             _pointerEventsAllowed = false;
             _chestContent.gameObject.SetActive(true);
+            _chestOpenedFeedback?.Play(transform.position);
         }
     }
 }

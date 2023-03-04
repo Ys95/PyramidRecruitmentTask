@@ -11,10 +11,9 @@ namespace PyramidRecruitmentTask.Managers
         [Inject] private SignalBus _signalBus;
 
         private TimeSpan _time;
-        public  bool     P_TimerRunning         { get; private set; }
-        public  int      P_CurrentTimeInSeconds { get; private set; }
-        public  int      P_CurrentTimeString    { get; private set; }
-        public  TimeSpan P_Time                 => _time;
+        
+        public  bool     P_TimerRunning { get; private set; }
+        public  TimeSpan P_Time         => _time;
 
         public void StartTimer()
         {

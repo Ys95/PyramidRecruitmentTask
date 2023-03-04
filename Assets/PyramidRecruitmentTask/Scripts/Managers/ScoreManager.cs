@@ -30,12 +30,10 @@ namespace PyramidRecruitmentTask.Managers
             if (!bestScore.HasValue)
             {
                 newScoreBetter = true;
-                Debug.Log("Score better");
             }
             else
             {
                 newScoreBetter = newScore.Ticks < bestScore.Value.Ticks;
-                Debug.Log(newScoreBetter ? "Score better" : "Score worse");
             }
 
             if (newScoreBetter)

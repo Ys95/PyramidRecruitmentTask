@@ -10,33 +10,27 @@ using Zenject;
 namespace PyramidRecruitmentTask.Interactions
 {
     [RequireComponent(typeof(Collider))]
-    public abstract class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDisposable, IInitializable
+    public abstract class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField] private Material        _mouseOverMaterial;
-        [SerializeField] private FeedbacksPlayer _interactionFeedbacks;
+        [SerializeField] private Material    _mouseOverMat;
+        [SerializeField] private Renderer _mainRenderer;
 
-        protected InputManager _inputManager;
-        protected bool         _pointerEventsAllowed;
-        private   Material     _regularMaterial;
-        private   Renderer     _renderer;
+        private Material _regularMat;
 
+        protected          bool      _pointerEventsAllowed;
+        protected          Collider  _collider;
         [Inject] protected SignalBus _signalBus;
 
         private void Awake()
         {
-            _renderer             = GetComponent<Renderer>();
-            _regularMaterial      = _renderer.material;
-            _inputManager         = FindObjectOfType<InputManager>();
+            _regularMat           = _mainRenderer.material;
             _pointerEventsAllowed = true;
+            _collider             = GetComponent<Collider>();
         }
 
         public void Dispose()
         {
             _signalBus.TryUnsubscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
-        }
-
-        public void Initialize()
-        {
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -63,26 +57,19 @@ namespace PyramidRecruitmentTask.Interactions
 
         protected virtual void OnPlayerInteractionAttempt(PlayerInteractionAttemptSignal signal)
         {
-            _interactionFeedbacks?.Play();
             HandleInteraction(signal.P_PlayerInteraction);
         }
 
         protected virtual void HandlePointerEnter()
         {
             _signalBus.Subscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
-            if (_mouseOverMaterial != null)
-            {
-                _renderer.material = _mouseOverMaterial;
-            }
+            _mainRenderer.material = _mouseOverMat;
         }
 
         protected virtual void HandlePointerExit()
         {
             _signalBus.TryUnsubscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
-            if (_mouseOverMaterial != null)
-            {
-                _renderer.material = _regularMaterial;
-            }
+            _mainRenderer.material = _regularMat;
         }
     }
 }

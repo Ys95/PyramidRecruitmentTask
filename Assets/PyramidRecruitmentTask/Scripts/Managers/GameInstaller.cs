@@ -1,6 +1,7 @@
 ﻿using Cinemachine;
 using PyramidRecruitmentTask.Input;
 using PyramidRecruitmentTask.Signals;
+using PyramidRecruitmentTask.UI;
 using UnityEngine;
 using Zenject;
 
@@ -21,7 +22,11 @@ namespace PyramidRecruitmentTask.Managers
         public override void InstallBindings()
         {
             DeclareSignals();
+            BindFromInstance();
+        }
 
+        private void BindFromInstance()
+        {
             Container.Bind<InputManager>().FromInstance(_inputManager);
             Container.Bind<CinemachineVirtualCamera>().FromInstance(_mainCmCam);
             Container.Bind<GameManager>().FromInstance(_gameManager);

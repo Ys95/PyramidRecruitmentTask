@@ -1,7 +1,12 @@
-﻿using PyramidRecruitmentTask.Signals;
+﻿using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
+using PyramidRecruitmentTask.Feedbacks;
+using PyramidRecruitmentTask.Signals;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Zenject;
 
@@ -9,12 +14,23 @@ namespace PyramidRecruitmentTask
 {
     public class PopupWindow : MonoBehaviour
     {
-        [SerializeField] private GameObject      _interactionPopupObject;
+        [Header("Feedbacks")]
+        [SerializeField] private FeedbacksPlayer _windowOpenFeedback;
+        [SerializeField] private FeedbacksPlayer _optionSelectFeedback;
+
+        [Space]
+        [SerializeField] private RectTransform _moveableTransform;
+        [SerializeField] private RectTransform      _interactionPopupContent;
         [SerializeField] private TextMeshProUGUI _titleTmp;
         [SerializeField] private Transform       _popupOptionsContainer;
         [SerializeField] private GameObject      _popupOptionPrefab;
 
         [Inject] private SignalBus _signalBus;
+
+        private Camera                                        _mainCamera;
+        private Canvas                                        _parentCanvas;
+        private RectTransform                                 _canvasRect;
+        private TweenerCore<Vector3, Vector3, VectorOptions> _currentTween;
 
         private void OnEnable()
         {
@@ -31,10 +47,11 @@ namespace PyramidRecruitmentTask
         private void CreateInteractionPopup(ShowInteractionPopupSignal signal)
         {
             ResetCurrentPopup();
-            RepositionPopup(signal.P_WorldPosition);
-            _interactionPopupObject.SetActive(true);
+            _interactionPopupContent.gameObject.SetActive(true);
 
             _titleTmp.text = signal.P_PopupWindowName;
+            
+            _windowOpenFeedback?.Play();
 
             foreach (var popupOption in signal.P_Options)
             {
@@ -51,23 +68,59 @@ namespace PyramidRecruitmentTask
 
                 btn.onClick.AddListener(ClosePopup);
             }
+            
+            RepositionPopup(signal.P_WorldPosition);
+
+            if (_currentTween != null)
+            {
+                _currentTween.Kill();
+            }
+
+            _moveableTransform.localScale = Vector3.zero;
+            _currentTween                 = _moveableTransform.DOScale(Vector3.one, 0.2f);
+            _currentTween.SetEase(Ease.InOutQuint);
         }
 
         public void ClosePopup()
         {
-            _interactionPopupObject.SetActive(false);
+            _optionSelectFeedback?.Play();
+            
+            if (_currentTween != null)
+            {
+                _currentTween.Kill();
+            }
+
+            _currentTween = _moveableTransform.DOScale(Vector3.zero, 0.2f);
+            _currentTween.SetEase(Ease.InOutQuint);
+            _currentTween.onComplete += () =>
+            {
+                _interactionPopupContent.gameObject.SetActive(false);
+            };
         }
 
         private void RepositionPopup(Vector3 worldPosition)
         {
-            var rect             = GetComponent<RectTransform>();
-            var viewportPosition = Camera.main.WorldToViewportPoint(worldPosition);
-            var sizeDelta        = rect.sizeDelta;
+            if (_mainCamera == null)
+            {
+                _mainCamera = Camera.main;
+            }
 
-            var screenPosition = new Vector2(
-                viewportPosition.x * sizeDelta.x - sizeDelta.x * 0.5f,
-                viewportPosition.y * sizeDelta.y - sizeDelta.y * 0.5f);
-            _interactionPopupObject.GetComponent<RectTransform>().anchoredPosition = screenPosition;
+            if (_parentCanvas == null)
+            {
+                _parentCanvas = GetComponentInParent<Canvas>();
+                _canvasRect   = _parentCanvas.GetComponent<RectTransform>();
+            }
+
+            _moveableTransform.position = Mouse.current.position.ReadValue();
+            Vector3 newPosition = _moveableTransform.localPosition;
+
+            Vector3 minPosition = _canvasRect.rect.min - _moveableTransform.rect.min;
+            Vector3 maxPosition = _canvasRect.rect.max - _moveableTransform.rect.max;
+
+            newPosition.x = Mathf.Clamp(newPosition.x, minPosition.x, maxPosition.x);
+            newPosition.y = Mathf.Clamp(newPosition.y, minPosition.y, maxPosition.y);
+
+            _moveableTransform.localPosition = newPosition;
         }
 
         private void ResetCurrentPopup()

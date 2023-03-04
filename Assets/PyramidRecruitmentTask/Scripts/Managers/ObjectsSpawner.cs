@@ -27,14 +27,17 @@ namespace PyramidRecruitmentTask.Managers
 
             foreach (var objSettings in _objectsSpawnSettings.Append(_playerSpawnSettings))
             {
-                if (objSettings.SpawnPointCenter == null)
+                foreach (var spawnSettings in objSettings.SpawnAreas)
                 {
-                    continue;
-                }
+                    if (spawnSettings.Center == null)
+                    {
+                        continue;
+                    }
 
-                Gizmos.color  = objSettings.GizmoColor;
-                Gizmos.matrix = Matrix4x4.TRS(objSettings.SpawnPointCenter.position, objSettings.SpawnPointCenter.rotation, objSettings.SpawnPointCenter.lossyScale);
-                Gizmos.DrawCube(Vector3.zero, new Vector3(objSettings.SpawnAreaSize.x, objSettings.SpawnAreaSize.y, objSettings.SpawnAreaSize.z));
+                    Gizmos.color  = objSettings.GizmoColor;
+                    Gizmos.matrix = Matrix4x4.TRS(spawnSettings.Center.position, spawnSettings.Center.rotation, spawnSettings.Center.lossyScale);
+                    Gizmos.DrawCube(Vector3.zero, new Vector3(spawnSettings.Size.x, spawnSettings.Size.y, spawnSettings.Size.z));
+                }
             }
         }
 
@@ -60,9 +63,10 @@ namespace PyramidRecruitmentTask.Managers
 
         private void RespawnPlayer()
         {
-            var obj = _diContainer.InstantiatePrefab(_playerSpawnSettings.ObjectPrefab);
-            obj.transform.position = GetSpawnPosition(_playerSpawnSettings, obj);
-            obj.transform.RotateAround(_playerSpawnSettings.SpawnPointCenter.position, _playerSpawnSettings.SpawnPointCenter.up, _playerSpawnSettings.SpawnPointCenter.eulerAngles.y);
+            var obj           = _diContainer.InstantiatePrefab(_playerSpawnSettings.ObjectPrefab);
+            var spawnPosition = _playerSpawnSettings.GetRandomSpawnArea();
+            obj.transform.position = GetSpawnPosition(spawnPosition, obj);
+            obj.transform.RotateAround(spawnPosition.Center.position, spawnPosition.Center.up, spawnPosition.Center.eulerAngles.y);
 
             _player = obj.GetComponent<Player.Player>();
 
@@ -75,39 +79,20 @@ namespace PyramidRecruitmentTask.Managers
         {
             foreach (var objSettings in _objectsSpawnSettings)
             {
-                var obj = _diContainer.InstantiatePrefab(objSettings.ObjectPrefab);
-                obj.transform.position = GetSpawnPosition(objSettings, obj);
-                obj.transform.RotateAround(objSettings.SpawnPointCenter.position, objSettings.SpawnPointCenter.up, objSettings.SpawnPointCenter.eulerAngles.y);
+                var obj           = _diContainer.InstantiatePrefab(objSettings.ObjectPrefab);
+                var spawnSettings = objSettings.GetRandomSpawnArea();
+                obj.transform.position = GetSpawnPosition(spawnSettings, obj);
+                obj.transform.RotateAround(spawnSettings.Center.position, spawnSettings.Center.up, spawnSettings.Center.eulerAngles.y);
                 obj.transform.parent = _objectsContainer;
             }
         }
-
-        [ContextMenu("Respawn 100")]
-        public void Respawn100()
+        
+        private Vector3 GetSpawnPosition(SpawnSettings.SpawnArea spawnAreaSettings, GameObject obj)
         {
-            foreach (Transform child in _objectsContainer)
-            {
-                DestroyImmediate(child.gameObject);
-            }
-
-            for (int i = 0; i < 100; i++)
-            {
-                foreach (var objSettings in _objectsSpawnSettings)
-                {
-                    var obj = Instantiate(objSettings.ObjectPrefab);
-                    obj.transform.position = GetSpawnPosition(objSettings, obj);
-                    obj.transform.RotateAround(objSettings.SpawnPointCenter.position, objSettings.SpawnPointCenter.up, objSettings.SpawnPointCenter.eulerAngles.y);
-                    obj.transform.parent = _objectsContainer;
-                }
-            }
-        }
-
-        private Vector3 GetSpawnPosition(SpawnSettings spawnSettings, GameObject obj)
-        {
-            var center    = spawnSettings.SpawnPointCenter.position;
+            var center    = spawnAreaSettings.Center.position;
             var collider  = obj.GetComponent<Collider>();
             var bounds    = collider != null ? collider.bounds.extents : Vector3.zero;
-            var spawnArea = spawnSettings.SpawnAreaSize;
+            var spawnArea = spawnAreaSettings.Size;
 
             // Calculate spawn area taking object bounds into account
             float rangeMinX = center.x - spawnArea.x / 2 + bounds.x;
@@ -118,20 +103,26 @@ namespace PyramidRecruitmentTask.Managers
 
             // Choose random point in spawn area
             var spawnPos = new Vector3(Random.Range(rangeMinX, rangeMaxX), 0, Random.Range(rangeMinZ, rangeMaxZ));
-            spawnPos.y = center.y + bounds.y;
-
-            Debug.Log($"spawn {spawnSettings.ObjectPrefab.name} woth bounds size {bounds} ");
-
+            spawnPos.y = center.y;
+            
             return spawnPos;
         }
 
         [Serializable]
         private struct SpawnSettings
         {
-            public GameObject ObjectPrefab;
-            public Transform  SpawnPointCenter;
-            public Vector3    SpawnAreaSize;
-            public Color      GizmoColor;
+            [Serializable]
+            public struct SpawnArea
+            {
+                public Transform Center;
+                public Vector3   Size;
+            }
+
+            public List<SpawnArea> SpawnAreas;
+            public GameObject      ObjectPrefab;
+            public Color           GizmoColor;
+
+            public SpawnArea GetRandomSpawnArea() => SpawnAreas[Random.Range(0, SpawnAreas.Count)];
         }
     }
 }

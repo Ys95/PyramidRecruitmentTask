@@ -8,10 +8,13 @@ namespace PyramidRecruitmentTask.Managers
     [RequireComponent(typeof(AudioSource))]
     public class AudioManager : MonoBehaviour
     {
-        private          Transform         _audioObjectsContainer;
-        private          List<AudioSource> _audioObjectsPool;
-        private          AudioSource       _bgmPlayer;
-        [Inject] private SignalBus         _signalBus;
+        private Transform         _audioObjectsContainer;
+        private List<AudioSource> _audioObjectsPool;
+        private AudioSource       _bgmPlayer;
+
+        private AudioClip _currentBgm;
+
+        [Inject] private SignalBus _signalBus;
 
         private void OnEnable()
         {
@@ -41,8 +44,16 @@ namespace PyramidRecruitmentTask.Managers
             PlayAudio(signal.P_AudioClip, signal.P_Position);
         }
 
-        public void PlayBGM(AudioClip clip)
+        public void PlayBGM(AudioClip clip, bool loop)
         {
+            _bgmPlayer.loop = loop;
+
+            if (clip == _currentBgm)
+            {
+                return;
+            }
+
+            _currentBgm     = clip;
             _bgmPlayer.clip = clip;
             _bgmPlayer.Play();
         }
@@ -60,7 +71,7 @@ namespace PyramidRecruitmentTask.Managers
         {
             for (int i = 0; i < _audioObjectsPool.Count; i++)
             {
-                if (_audioObjectsPool[i].isPlaying)
+                if (!_audioObjectsPool[i].isPlaying)
                 {
                     return _audioObjectsPool[i];
                 }
@@ -72,6 +83,7 @@ namespace PyramidRecruitmentTask.Managers
         private AudioSource AddAudioObjectToPool()
         {
             var obj = new GameObject();
+            obj.name             = "AudioObject";
             obj.transform.parent = _audioObjectsContainer;
             var audio = obj.AddComponent<AudioSource>();
             _audioObjectsPool.Add(audio);
