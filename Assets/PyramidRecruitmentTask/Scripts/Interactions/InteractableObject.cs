@@ -28,11 +28,11 @@ namespace PyramidRecruitmentTask.Interactions
             _collider             = GetComponent<Collider>();
         }
 
-        public void Dispose()
+        private void OnDisable()
         {
             _signalBus.TryUnsubscribe<PlayerInteractionAttemptSignal>(OnPlayerInteractionAttempt);
         }
-
+        
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (!_pointerEventsAllowed)
