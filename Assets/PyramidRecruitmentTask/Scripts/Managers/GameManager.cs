@@ -125,14 +125,14 @@ namespace PyramidRecruitmentTask.Managers
         {
             _mainMenuCamera.Priority = 10;
             _objectsSpawner.WipeEverything();
-            _uiManager.P_MainMenuScreen.gameObject.SetActive(true);
+            _uiManager.DisplayMainMenu(true);
             _audioManager.PlayBGM(_menuBgm, true);
         }
 
         private void OnMainMenuExit()
         {
             _mainMenuCamera.Priority = 0;
-            _uiManager.P_MainMenuScreen.gameObject.SetActive(false);
+            _uiManager.DisplayMainMenu(false);
         }
 
         private void OnInGameEnter()
@@ -140,27 +140,27 @@ namespace PyramidRecruitmentTask.Managers
             _gameCamera.Priority = 10;
             _objectsSpawner.RespawnEverything();
             _timer.StartTimer();
-            _uiManager.P_InGameUI.gameObject.SetActive(true);
+            _uiManager.DisplayInGameUI(true);
             _audioManager.PlayBGM(_inGameBgm, true);
         }
 
         private void OnInGameExit()
         {
             _gameCamera.Priority = 0;
-            _uiManager.P_InGameUI.gameObject.SetActive(false);
+            _uiManager.DisplayInGameUI(false);
             _timer.StopTimer();
         }
 
         private void OnGameOverEnter()
         {
             ScoreManager.ProcessNewScore(_timer.P_Time);
-            _uiManager.DisplayGameOverScreen();
+            _uiManager.DisplayGameOverScreen(true);
             _audioManager.PlayBGM(_gameOverBgm, false);
         }
 
         private void OnGameOverExit()
         {
-            _uiManager.P_GameOverScreen.gameObject.SetActive(false);
+            _uiManager.DisplayGameOverScreen(false);
         }
     }
 }

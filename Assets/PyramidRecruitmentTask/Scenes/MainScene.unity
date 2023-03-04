@@ -2420,7 +2420,9 @@ MonoBehaviour:
     Screen: {fileID: 1644968667}
     CurrentScoreTmp: {fileID: 646181596}
     BestScoreTmp: {fileID: 1097095484}
-  _mainMenuScreen: {fileID: 439222376}
+  _mainMenuScreen:
+    Screen: {fileID: 439222376}
+    BestScoreTmp: {fileID: 3453184984361873962}
   _inGameUI: {fileID: 1002405132}
   _timerDisplay: {fileID: 926569538}
 --- !u!1 &1762185537
@@ -3898,6 +3900,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0f2ff4e92da3314986268febc6e8fb2, type: 3}
+--- !u!114 &3453184984361873962 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2727243843348239897, guid: f0f2ff4e92da3314986268febc6e8fb2, type: 3}
+  m_PrefabInstance: {fileID: 3453184984361873961}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3836173023908173075
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,17 +11,12 @@ namespace PyramidRecruitmentTask.UI
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private GameOverScreen  _gameOverScreen;
-        [SerializeField] private GameObject      _mainMenuScreen;
+        [SerializeField] private MainMenuScreen  _mainMenuScreen;
         [SerializeField] private GameObject      _inGameUI;
         [SerializeField] private TextMeshProUGUI _timerDisplay;
 
         [Inject] private SignalBus _signalBus;
-
-        public GameObject      P_GameOverScreen => _gameOverScreen.Screen;
-        public GameObject      P_MainMenuScreen => _mainMenuScreen;
-        public GameObject      P_InGameUI       => _inGameUI;
-        public TextMeshProUGUI P_TimerDisplay   => _timerDisplay;
-
+        
         private void OnEnable()
         {
             _signalBus.Subscribe<TimerStartSignal>(DisplayTimer);
@@ -32,25 +27,57 @@ namespace PyramidRecruitmentTask.UI
             _signalBus.TryUnsubscribe<TimerStartSignal>(StopDisplayingTimer);
         }
 
-        public void DisplayGameOverScreen()
+        public void DisplayInGameUI(bool display) => _inGameUI.SetActive(display);
+        
+        public void DisplayGameOverScreen(bool display)
         {
+            if (!display)
+            {
+                _gameOverScreen.Screen.SetActive(false);
+                return;
+            }
+            
             TimeSpan? currentScore = ScoreManager.P_LatestScore;
             TimeSpan? bestScore    = ScoreManager.P_BestScore;
 
             if (currentScore.HasValue)
             {
                 _gameOverScreen.Screen.SetActive(true);
-                _gameOverScreen.CurrentScoreTmp.text = $"{currentScore:mm\\:ss\\:ms}";
+                _gameOverScreen.CurrentScoreTmp.text = $"{currentScore:mm\\:ss\\:ff}";
             }
 
             if (bestScore.HasValue)
             {
-                _gameOverScreen.BestScoreTmp.text = $"{bestScore:mm\\:ss\\:ms}";
+                _gameOverScreen.BestScoreTmp.text = $"{bestScore:mm\\:ss\\:ff}";
             }
             else
             {
                 _gameOverScreen.BestScoreTmp.text = "-";
             }
+            
+            _gameOverScreen.Screen.SetActive(true);
+        }
+
+        public void DisplayMainMenu(bool display)
+        {
+            if (!display)
+            {
+                _mainMenuScreen.Screen.SetActive(false);
+                return;
+            }
+            
+            TimeSpan? bestScore = ScoreManager.P_BestScore;
+            
+            if (bestScore.HasValue)
+            {
+                _mainMenuScreen.BestScoreTmp.text = $"{bestScore:mm\\:ss\\:ff}";
+            }
+            else
+            {
+                _mainMenuScreen.BestScoreTmp.text = "-";
+            }
+            
+            _mainMenuScreen.Screen.SetActive(true);
         }
 
         public void DisplayTimer(TimerStartSignal timer)
@@ -95,6 +122,13 @@ namespace PyramidRecruitmentTask.UI
         {
             public GameObject      Screen;
             public TextMeshProUGUI CurrentScoreTmp;
+            public TextMeshProUGUI BestScoreTmp;
+        }
+        
+        [Serializable]
+        private struct MainMenuScreen
+        {
+            public GameObject      Screen;
             public TextMeshProUGUI BestScoreTmp;
         }
     }
