@@ -1,6 +1,6 @@
 # List of used assets
 
-Environemnt and particles:
+Environment and particles:
 - https://assetstore.unity.com/packages/vfx/particles/polygonal-s-low-poly-particle-pack-118355
 - https://assetstore.unity.com/packages/3d/environments/historic/voxel-castle-pack-lite-164189
 
