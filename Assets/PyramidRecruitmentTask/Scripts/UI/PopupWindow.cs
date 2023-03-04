@@ -20,7 +20,7 @@ namespace PyramidRecruitmentTask
 
         [Space]
         [SerializeField] private RectTransform _moveableTransform;
-        [SerializeField] private RectTransform      _interactionPopupContent;
+        [SerializeField] private RectTransform   _interactionPopupContent;
         [SerializeField] private TextMeshProUGUI _titleTmp;
         [SerializeField] private Transform       _popupOptionsContainer;
         [SerializeField] private GameObject      _popupOptionPrefab;
@@ -111,7 +111,8 @@ namespace PyramidRecruitmentTask
                 _canvasRect   = _parentCanvas.GetComponent<RectTransform>();
             }
 
-            _moveableTransform.position = Mouse.current.position.ReadValue();
+            var mousePos = Mouse.current.position.ReadValue();
+            _moveableTransform.position = new Vector2(mousePos.x + 5f, mousePos.y + 5f);
             Vector3 newPosition = _moveableTransform.localPosition;
 
             Vector3 minPosition = _canvasRect.rect.min - _moveableTransform.rect.min;
