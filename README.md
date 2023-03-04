@@ -1,4 +1,4 @@
-[size=10]List of used assets:[/size]
+# List of used assets
 
 Environemnt and particles:
 - https://assetstore.unity.com/packages/vfx/particles/polygonal-s-low-poly-particle-pack-118355
