@@ -1,11 +1,10 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Etc
 {
     public class UIHoverTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

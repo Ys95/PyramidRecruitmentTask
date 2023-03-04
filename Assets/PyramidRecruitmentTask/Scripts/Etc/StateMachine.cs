@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Etc
 {
     public class StateMachine<T> where T : Enum
     {

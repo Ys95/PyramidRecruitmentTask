@@ -1,4 +1,5 @@
 ﻿using System;
+using PyramidRecruitmentTask.Etc;
 
 namespace PyramidRecruitmentTask.Input
 {

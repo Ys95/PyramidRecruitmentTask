@@ -3,7 +3,7 @@ using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
-namespace PyramidRecruitmentTask
+namespace PyramidRecruitmentTask.Etc
 {
     public class FloatTween : MonoBehaviour
     {

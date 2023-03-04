@@ -113,6 +113,9 @@ namespace PyramidRecruitmentTask
 
             var mousePos = Mouse.current.position.ReadValue();
             _moveableTransform.position = new Vector2(mousePos.x + 5f, mousePos.y + 5f);
+            
+            
+            //ensure that popup is within screen bounds
             Vector3 newPosition = _moveableTransform.localPosition;
 
             Vector3 minPosition = _canvasRect.rect.min - _moveableTransform.rect.min;
