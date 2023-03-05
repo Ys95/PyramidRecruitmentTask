@@ -48,7 +48,7 @@ namespace PyramidRecruitmentTask.Managers
         {
             _bgmPlayer.loop = loop;
 
-            if (clip == _currentBgm)
+            if (clip == _currentBgm && !_bgmPlayer.isPlaying)
             {
                 return;
             }
