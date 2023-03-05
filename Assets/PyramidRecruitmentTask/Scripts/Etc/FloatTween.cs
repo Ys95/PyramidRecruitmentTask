@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using UnityEngine;
@@ -20,6 +21,15 @@ namespace PyramidRecruitmentTask.Etc
             _movementTween.SetLoops(-1, LoopType.Yoyo);
             _movementTween.SetEase(_ease);
             _movementTween.Play();
+        }
+
+        private void OnDisable()
+        {
+            if (_movementTween.IsActive())
+            {
+                _movementTween.Kill();
+                _movementTween = null;
+            }
         }
     }
 }

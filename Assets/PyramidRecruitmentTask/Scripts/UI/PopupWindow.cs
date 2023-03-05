@@ -42,6 +42,12 @@ namespace PyramidRecruitmentTask
         {
             _signalBus.TryUnsubscribe<ShowInteractionPopupSignal>(CreateInteractionPopup);
             _signalBus.TryUnsubscribe<HideInteractionPopupSignal>(ClosePopup);
+
+            if (_currentTween.IsActive())
+            {
+                _currentTween.Kill();
+                _currentTween = null;
+            }
         }
 
         private void CreateInteractionPopup(ShowInteractionPopupSignal signal)
@@ -71,9 +77,10 @@ namespace PyramidRecruitmentTask
             
             RepositionPopup(signal.P_WorldPosition);
 
-            if (_currentTween != null)
+            if (_currentTween.IsActive())
             {
                 _currentTween.Kill();
+                _currentTween = null;
             }
 
             _moveableTransform.localScale = Vector3.zero;
@@ -85,9 +92,10 @@ namespace PyramidRecruitmentTask
         {
             _optionSelectFeedback?.Play();
             
-            if (_currentTween != null)
+            if (_currentTween.IsActive())
             {
                 _currentTween.Kill();
+                _currentTween = null;
             }
 
             _currentTween = _moveableTransform.DOScale(Vector3.zero, 0.2f);

@@ -42,8 +42,6 @@ namespace PyramidRecruitmentTask.Input
             {
                 P_CameraRotationFloat.UpdateValue(0);
             }
-
-            Debug.Log(P_CameraRotationFloat.P_CurrentValue);
         }
 
         public void SetInteractionButton(InputAction.CallbackContext context)
