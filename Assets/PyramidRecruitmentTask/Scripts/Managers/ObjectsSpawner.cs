@@ -10,13 +10,14 @@ namespace PyramidRecruitmentTask.Managers
 {
     public class ObjectsSpawner : MonoBehaviour
     {
-        [SerializeField] private SpawnSettings            _playerSpawnSettings;
-        [SerializeField] private List<SpawnSettings>      _objectsSpawnSettings;
-        [SerializeField] private Transform                _objectsContainer;
-        [Inject]         private CinemachineVirtualCamera _cmMainCam;
+        [SerializeField] private SpawnSettings       _playerSpawnSettings;
+        [SerializeField] private List<SpawnSettings> _objectsSpawnSettings;
+        [SerializeField] private Transform           _objectsContainer;
 
-        [Inject] private DiContainer   _diContainer;
-        private          Player.Player _player;
+        private Player.Player _player;
+
+        [Inject] private CinemachineVirtualCamera _cmMainCam;
+        [Inject] private DiContainer              _diContainer;
 
         private void OnDrawGizmos()
         {
@@ -86,7 +87,7 @@ namespace PyramidRecruitmentTask.Managers
                 obj.transform.parent = _objectsContainer;
             }
         }
-        
+
         private Vector3 GetSpawnPosition(SpawnSettings.SpawnArea spawnAreaSettings, GameObject obj)
         {
             var center    = spawnAreaSettings.Center.position;
@@ -104,7 +105,7 @@ namespace PyramidRecruitmentTask.Managers
             // Choose random point in spawn area
             var spawnPos = new Vector3(Random.Range(rangeMinX, rangeMaxX), 0, Random.Range(rangeMinZ, rangeMaxZ));
             spawnPos.y = center.y;
-            
+
             return spawnPos;
         }
 
